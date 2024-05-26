@@ -45,7 +45,7 @@ class Coin(Distribution[str]):
 
 
 @dataclass(frozen=True)
-class Die(Distribution):
+class Die(Distribution[int]):
     sides: int
 
     def sample(self):
