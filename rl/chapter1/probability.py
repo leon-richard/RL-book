@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 import random
 import statistics
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Sequence
 
 
 A = TypeVar("A")
@@ -12,6 +12,9 @@ class Distribution(ABC, Generic[A]):
     @abstractmethod
     def sample(self) -> A:
         pass
+
+    def sample_n(self, n: int) -> Sequence[A]:
+        return [self.sample() for _ in range(n)]
 
 
 class OldDie(Distribution):
@@ -55,5 +58,16 @@ class Die(Distribution[int]):
 def expected_value(d: Distribution[float], n: int) -> float:
     return statistics.mean(d.sample() for _ in range(n))
 
+import numpy as np
+@dataclass
+class Gaussian(Distribution[float]):
+    μ: float
+    σ: float
+    def sample(self) -> float:
+        return np.random.normal(loc=self.μ, scale=self.σ)
+    def sample_n(self, n: int) -> Sequence[float]:
+        return list(np.random.normal(loc=self.μ, scale=self.σ, size=n))
+
 
 expected_value(Die(6), 100)
+

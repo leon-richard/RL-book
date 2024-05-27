@@ -1,5 +1,5 @@
 {
-    "python.linting.mypyEnabled": true,
-    "python.linting.enabled": true,
+    // "python.linting.mypyEnabled": true,
+    // "python.linting.enabled": true,
     "python.analysis.typeCheckingMode": "basic"  // 可以是 "off"、"basic" 或 "strict"
 }
