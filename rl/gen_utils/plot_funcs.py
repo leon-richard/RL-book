@@ -33,7 +33,8 @@ def plot_list_of_curves(
         plt.title(title, fontsize=25)
     plt.grid(True)
     plt.legend(fontsize=15)
-    plt.show()
+    # plt.show()
+    plt.savefig(f'{title}.png')  # 保存图形为文件
 
 
 if __name__ == '__main__':

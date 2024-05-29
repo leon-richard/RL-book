@@ -24,7 +24,15 @@ class Process1:
         up_move: int = binomial(1, self.up_prob(state), 1)[0]
         return Process1.State(price=state.price + up_move * 2 - 1)
 
-
+# 在这段代码中，`Optional` 是 Python 的类型提示工具 `typing` 模块中的一个类型别名。`Optional[X]` 实际上是 `Union[X, None]` 的简写，表示这个变量的类型可以是 `X` 或 `None`。
+# 对于 `handy_map` 这个变量的类型提示，`Mapping[Optional[bool], int]` 意味着它是一个映射（字典），键的类型可以是 `bool` 或 `None`，值的类型是 `int`。所以在这种情况下，`Optional[bool]` 相当于 `Union[bool, None]`。
+# 你可以将 `Optional[bool]` 替换为 `Union[bool, None]`，效果是一样的。具体如下：
+# ```python
+# from typing import Mapping, Union
+# handy_map: Mapping[Union[bool, None], int] = {True: -1, False: 1, None: 0}
+# ```
+# 虽然这样也可以达到同样的效果，但 `Optional` 提供了一种更简洁、更直观的写法。所以在这种情况下，推荐使用 `Optional`。
+# 总结一下，`Optional` 不能被省略，但可以被 `Union` 替代。
 handy_map: Mapping[Optional[bool], int] = {True: -1, False: 1, None: 0}
 
 
@@ -41,7 +49,10 @@ class Process2:
         return 0.5 * (1 + self.alpha2 * handy_map[state.is_prev_move_up])
 
     def next_state(self, state: State) -> State:
-        up_move: int = binomial(1, self.up_prob(state), 1)[0]
+        # up_move: int = binomial(1, self.up_prob(state), 1)[0]
+        # 假设 self.up_prob(state) 返回的是一个概率值（0到1之间）
+        prob = self.up_prob(state)
+        up_move: int = np.random.choice([0, 1], p=[1 - prob, prob])
         return Process2.State(
             price=state.price + up_move * 2 - 1,
             is_prev_move_up=bool(up_move)
@@ -91,14 +102,14 @@ def process1_price_traces(
         np.fromiter((s.price for s in itertools.islice(
             simulation(process, start_state),
             time_steps + 1
-        )), float) for _ in range(num_traces)])
+        )), int) for _ in range(num_traces)])
 
 
 def process2_price_traces(
     start_price: int,
-    alpha2: float,
-    time_steps: int,
-    num_traces: int
+    alpha2: float = 0.75,
+    time_steps: int = 100,
+    num_traces: int = 30
 ) -> np.ndarray:
     process = Process2(alpha2=alpha2)
     start_state = Process2.State(price=start_price, is_prev_move_up=None)

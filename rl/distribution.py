@@ -182,7 +182,7 @@ class FiniteDistribution(Distribution[A], ABC):
         distribution.
 
         '''
-        return self.table()[outcome]
+        return self.table().get(outcome, 0.0)
 
     def map(self, f: Callable[[A], B]) -> FiniteDistribution[B]:
         '''Return a new distribution that is the result of applying a function
@@ -249,6 +249,7 @@ class Bernoulli(FiniteDistribution[bool]):
     p: float
 
     def sample(self) -> bool:
+        # return random.choices(population=[True, False], weights=[self.p, 1-self.p])[0]
         return random.uniform(0, 1) <= self.p
 
     def table(self) -> Mapping[bool, float]:
