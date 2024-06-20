@@ -7,7 +7,7 @@ from scipy.stats import poisson
 from rl.distribution import SampledDistribution, Categorical, \
     FiniteDistribution
 import numpy as np
-
+import graphviz
 
 @dataclass(frozen=True)
 class InventoryState:
@@ -91,6 +91,21 @@ class SimpleInventoryMRPFinite(FiniteMarkovRewardProcess[InventoryState]):
                 sr_probs_map[(InventoryState(0, beta1), reward)] = probability
                 d[state] = Categorical(sr_probs_map)
         return d
+    
+    def presentAlphaBeta(self, s: InventoryState) -> str:
+        return f'α={s.on_hand}, β={s.on_order}'
+    
+    def generate_image(self) -> graphviz.Digraph:
+        d = graphviz.Digraph()
+
+        for s in self.transition_reward_map.keys():
+            d.node(self.presentAlphaBeta(s.state))
+
+        for s, v in self.transition_reward_map.items():
+            for (s1, r), p in v:
+                d.edge(self.presentAlphaBeta(s.state), self.presentAlphaBeta(s1.state), label=f"{p:.1%}\n{r:.1f}")
+
+        return d
 
 
 if __name__ == '__main__':
@@ -107,6 +122,12 @@ if __name__ == '__main__':
         holding_cost=user_holding_cost,
         stockout_cost=user_stockout_cost
     )
+
+    # print(SimpleInventoryMRPFinite.mro())
+
+    # for s, v in si_mrp.transition_map.items():
+    #     distribution = si_mrp.transition(s)
+    #     print(distribution)
 
     from rl.markov_process import FiniteMarkovProcess
     print("Transition Map")
@@ -134,3 +155,6 @@ if __name__ == '__main__':
     print("--------------")
     si_mrp.display_value_function(gamma=user_gamma)
     print()
+
+    digraph = si_mrp.generate_image()
+    digraph.render('simpleInventoryMRP', format='png', cleanup=True)
