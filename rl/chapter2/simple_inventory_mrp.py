@@ -8,6 +8,7 @@ from rl.distribution import SampledDistribution, Categorical, \
     FiniteDistribution
 import numpy as np
 import graphviz
+from pprint import pprint
 
 @dataclass(frozen=True)
 class InventoryState:
@@ -59,15 +60,22 @@ class SimpleInventoryMRPFinite(FiniteMarkovRewardProcess[InventoryState]):
         capacity: int,
         poisson_lambda: float,
         holding_cost: float,
-        stockout_cost: float
+        stockout_cost: float,
+        gamma: float # discount ratio 用于计算 V
     ):
         self.capacity: int = capacity
         self.poisson_lambda: float = poisson_lambda
         self.holding_cost: float = holding_cost
         self.stockout_cost: float = stockout_cost
+        self.gamma: float = gamma
 
         self.poisson_distr = poisson(poisson_lambda)
         super().__init__(self.get_transition_reward_map())
+
+        self.state_value = {
+            self.non_terminal_states[i]: round(v, 3)
+            for i, v in enumerate(self.get_value_function_vec(self.gamma))
+        }
 
     def get_transition_reward_map(self) -> \
             Mapping[
@@ -93,7 +101,7 @@ class SimpleInventoryMRPFinite(FiniteMarkovRewardProcess[InventoryState]):
         return d
     
     def presentAlphaBeta(self, s: InventoryState) -> str:
-        return f'α={s.on_hand}, β={s.on_order}'
+        return f'α={s.on_hand}, β={s.on_order}\nV={self.state_value[NonTerminal(s)]}'
     
     def generate_image(self) -> graphviz.Digraph:
         d = graphviz.Digraph()
@@ -120,7 +128,8 @@ if __name__ == '__main__':
         capacity=user_capacity,
         poisson_lambda=user_poisson_lambda,
         holding_cost=user_holding_cost,
-        stockout_cost=user_stockout_cost
+        stockout_cost=user_stockout_cost,
+        gamma=user_gamma
     )
 
     # print(SimpleInventoryMRPFinite.mro())
@@ -153,7 +162,8 @@ if __name__ == '__main__':
 
     print("Value Function")
     print("--------------")
-    si_mrp.display_value_function(gamma=user_gamma)
+    # si_mrp.display_value_function(gamma=user_gamma)
+    pprint(si_mrp.state_value)
     print()
 
     digraph = si_mrp.generate_image()
