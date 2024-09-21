@@ -109,8 +109,8 @@ if __name__ == '__main__':
     user_holding_cost = 1.0
     user_stockout_cost = 10.0
 
-    user_reorder_point = 8
-    user_reorder_point_poisson_mean = 8.0
+    user_reorder_point = 4
+    user_reorder_point_poisson_mean = 4.0
 
     user_time_steps = 1000
     user_num_traces = 1000

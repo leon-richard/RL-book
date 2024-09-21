@@ -144,6 +144,7 @@ class TestCategorical(unittest.TestCase):
     def setUp(self):
         self.normalized = Categorical({True: 0.3, False: 0.7})
         self.unnormalized = Categorical({True: 3., False: 7.})
+        self.chooseDistributiion = Categorical({1: 0.25, 2: 0.25, 3: 0.25, 4: 0.25})
 
     def test_categorical(self):
         assert_almost_equal(self, self.normalized, Bernoulli(0.3))
@@ -156,3 +157,13 @@ class TestCategorical(unittest.TestCase):
         self.assertAlmostEqual(self.unnormalized.probability(True), 0.3)
         self.assertAlmostEqual(self.unnormalized.probability(False), 0.7)
         self.assertAlmostEqual(self.unnormalized.probability(None), 0.)
+
+    def test_chooseDistribution(self):
+        print("\nBegin test_chooseDistribution.")
+        assert_almost_equal(self, self.chooseDistributiion, Choose({1, 2, 3, 4}))
+        print(f'expectation = {self.chooseDistributiion.expectation(lambda x: x)}')
+        dict_table = {x: p for x, p in self.chooseDistributiion}
+        print(dict_table)
+        print(self.chooseDistributiion)
+        print(self.chooseDistributiion.probabilities)
+        print("End test_chooseDistribution.")

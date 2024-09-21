@@ -110,9 +110,9 @@ def accumulate(
 
 if __name__ == '__main__':
     import numpy as np
-    x = 0.0
+    x = -10.0
     values = converge(
-        iterate(lambda y: np.cos(y), x),
+        iterate(lambda y: 0.5*y+1.5, x),
         lambda a, b: np.abs(a - b) < 1e-3
     )
     for i, v in enumerate(values):

@@ -187,10 +187,17 @@ if __name__ == '__main__':
         2: Categorical({(1, -2.0): 0.1, (2, 4.0): 0.2, (3, 0.0): 0.7}),
         3: Categorical({(1, 3.0): 0.2, (2, 8.0): 0.6, (3, 4.0): 0.2})
     }
-    gamma = 0.9
+    gamma = 0.99
 
     fmrp = FiniteMarkovRewardProcess(transition_reward_map)
+    print("\nStationary Distribution:")
     fmrp.display_stationary_distribution()
+
+    print("\nReward function:")
     fmrp.display_reward_function()
+
+    print("\nValue function:")
     fmrp.display_value_function(gamma=gamma)
+
+    print("\nEvaluated Result:")
     pprint(evaluate_mrp_result(fmrp, gamma=gamma))
